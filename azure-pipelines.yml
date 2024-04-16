@@ -1,0 +1,52 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: 
+   branches:
+     include: 
+      - master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: my_variables
+
+stages:
+  - stage: Build_VM
+    jobs:
+      - job: Terraform
+        displayName: Terraform
+        steps:
+        - task: TerraformInstaller@1
+          inputs:
+            terraformVersion: 'latest'       
+        
+        # - script: |
+        #    cd $(System.DefaultWorkingDirectory)/Terraform
+        #    terraform init
+        - task: TerraformTaskV4@4
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/Terraform'
+            backendServiceArm: 'Pay-As-You-Go(bf784726-6246-4e6e-be0c-b0dd9f0f5cb6)'
+            backendAzureRmResourceGroupName: 'tf-backend'
+            backendAzureRmStorageAccountName: 'tfbackendsgacc'
+            backendAzureRmContainerName: 'tfstate'
+            backendAzureRmKey: 'terraform.tfstate'
+        - script: |
+           cd $(System.DefaultWorkingDirectory)/Terraform
+            terraform validate
+            terraform plan --var-file=input.tfvars -lock=false
+            terraform destroy --var-file=input.tfvars -lock=false --auto-approve
+
+          env:
+            TF_VAR_clientid: $(TF_VAR_clientid)
+            TF_VAR_secret: $(TF_VAR_secret)
+            TF_VAR_subscription_id: $(TF_VAR_subscription_id)
+            TF_VAR_tenantid: $(TF_VAR_tenantid)
+           
+              

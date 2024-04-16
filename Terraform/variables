@@ -1,0 +1,44 @@
+# variable "rg" {
+#   type    = map(object({
+#     location = string 
+#     }))
+#   default = {
+#     myrg01 = {
+#       location = "East Us"
+#     }
+#     myrg02={
+#       location = "East Us"
+#     }
+#     myrg03 = {
+#       location = "East Us"
+#     }
+#   }
+# }
+
+
+variable "rg" {
+  type = list(string)
+  default = ["myrg02","myrg03"]
+  
+}
+
+# variable "myrg"{
+#   type = map(string)
+#   default = {
+#     myrg01 = "East Us"
+#     myrg02 = "East Us"
+#     myrg03 = "East Us"
+#   }
+# }
+
+# variable "myrg"{
+#   type = string
+#   default  = "rg01"
+# }
+
+
+
+# variable "location" {
+#   type    = string
+#   default = "East US"
+# }
